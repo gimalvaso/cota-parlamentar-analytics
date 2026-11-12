@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: brasilapi
+    schema: raw_brasilapi
+    description: Carregado por `ingestion/brasilapi.py` (dlt).
+    tables:
+      - name: cnpj
+        description: >
+          Cadastro na Receita Federal dos fornecedores pessoa jurídica. Cache incremental: cada execução
+          consulta só CNPJs novos, dos que mais receberam primeiro. CNPJ não encontrado fica com
+          `status_consulta = 'nao_encontrado'` e o resto vazio.
+        columns:
+          - name: cnpj
+            data_tests: [not_null, unique]
+      - name: cnpj__cnaes_secundarios
+        description: Atividades secundárias do CNPJ (filha de `cnpj`, ligada por `_dlt_parent_id`).
+      - name: feriados
+        description: Feriados nacionais por ano.

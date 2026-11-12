@@ -1,0 +1,30 @@
+name: cota_parlamentar
+version: "1.0.0"
+profile: cota_parlamentar
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+flags:
+  require_explicit_package_overrides_for_builtin_materializations: true
+
+models:
+  cota_parlamentar:
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +schema: intermediate
+      +materialized: table
+    marts:
+      +schema: marts
+      +materialized: table
+
+seeds:
+  cota_parlamentar:
+    +schema: seeds
+
+tests:
+  +severity: warn   # só bloqueia o que a política de qualidade promove a error

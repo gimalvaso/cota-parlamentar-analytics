@@ -1,0 +1,8 @@
+# Sem segredo: o banco é um arquivo local.
+cota_parlamentar:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('DBT_DUCKDB_PATH', 'data/cota.duckdb') }}"
+      threads: 4

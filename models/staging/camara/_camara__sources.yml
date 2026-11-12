@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: camara
+    schema: raw_camara
+    description: Carregado por `ingestion/camara.py` (dlt). Tudo como texto; a tipagem é feita no staging.
+    tables:
+      - name: despesas
+        description: >
+          Notas da cota parlamentar, do arquivo anual oficial (uma linha por nota ou parcela).
+          Inclui gastos de lideranças partidárias, que não têm id de deputado.
+        loaded_at_field: "to_timestamp(_dlt_load_id::double)"
+        freshness:
+          warn_after: {count: 8, period: day}
+        columns:
+          - name: num_ano
+            data_tests: [not_null]
+
+      - name: deputados
+        description: Deputados que exerceram mandato na legislatura configurada (uma linha por deputado).
+        columns:
+          - name: id
+            data_tests: [not_null, unique]
+
+      - name: deputados_historico
+        description: >
+          Eventos do mandato de cada deputado (posse, licença, troca de partido, mudança de nome),
+          em todas as legislaturas dele. `data_hora` é horário de Brasília, sem fuso.
