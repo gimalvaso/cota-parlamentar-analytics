@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+data/*.duckdb
+data/*.duckdb.wal
+.dlt/secrets.toml
+.dlt/.var/
+target/
+dbt_packages/
+logs/
+.user.yml
+*.pbix
+.pbi/localSettings.json
+.pbi/cache.abf
