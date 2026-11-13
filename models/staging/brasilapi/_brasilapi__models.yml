@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: stg_brasilapi__cnpj
+    description: >
+      Cadastro na Receita dos fornecedores PJ já consultados. Cobertura parcial: a consulta é
+      incremental, dos fornecedores que mais receberam para os que menos receberam.
+    columns:
+      - name: cnpj
+        data_tests:
+          - not_null
+          - unique:
+              config:
+                severity: error   # CNPJ repetido duplica as notas do fornecedor no join
+      - name: encontrado_na_receita
+        description: Falso quando a BrasilAPI não achou o CNPJ; aí o resto vem vazio.
+      - name: data_abertura
+        description: Início de atividade na Receita. Base do sinal "empresa aberta pouco antes do pagamento".
+        data_tests:
+          - not_null:
+              config:
+                where: "encontrado_na_receita"
+
+  - name: stg_brasilapi__cnaes_secundarios
+    description: Atividades secundárias de cada CNPJ (uma linha por par CNPJ × CNAE).
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [cnpj, cnae_id]
+    columns:
+      - name: cnpj
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_brasilapi__cnpj')
+                field: cnpj
+
+  - name: stg_brasilapi__feriados
+    description: Feriados nacionais dos anos carregados.
+    columns:
+      - name: data
+        data_tests:
+          - not_null
+          - unique
