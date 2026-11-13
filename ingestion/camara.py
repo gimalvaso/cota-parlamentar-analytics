@@ -46,12 +46,18 @@ def camara_api_source(legislatura: int = dlt.config.value, deputado_ids: list[in
     def deputados() -> Iterator[list[dict[str, Any]]]:
         # Quem trocou de partido aparece uma vez por partido; o partido vem do histórico,
         # então aqui fica uma linha por deputado.
+        # As repetições vêm lado a lado (ordenado por id), quase sempre na mesma página: o
+        # `vistos` precisa ser atualizado a cada deputado, não ao fim da página.
         vistos: set[int] = set()
         for pagina in client.paginate(
             "/deputados", params={"idLegislatura": legislatura, "itens": 100, "ordem": "ASC", "ordenarPor": "id"}
         ):
-            unicos = [d for d in pagina if d["id"] not in vistos and (not deputado_ids or d["id"] in deputado_ids)]
-            vistos.update(d["id"] for d in unicos)
+            unicos = []
+            for dep in pagina:
+                if dep["id"] in vistos or (deputado_ids and dep["id"] not in deputado_ids):
+                    continue
+                vistos.add(dep["id"])
+                unicos.append(dep)
             if unicos:
                 yield unicos
 

@@ -11,3 +11,9 @@ workers = 8
 
 [runtime.http]
 request_max_attempts = 6
+
+# Tabela arrow (despesas) só ganha _dlt_load_id com isto; o freshness da source depende dele.
+# Ligar isto numa tabela que já existe falha no DuckDB ("Adding columns with constraints not yet
+# supported"): é preciso apagar raw_camara.despesas e raw_camara_staging.despesas e recarregar.
+[normalize.parquet_normalizer]
+add_dlt_load_id = true
