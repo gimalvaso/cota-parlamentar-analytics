@@ -19,6 +19,7 @@ from ingestion.brasilapi import brasilapi_source
 from ingestion.camara import camara_api_source, camara_cota_source
 
 DB_PATH = Path(__file__).resolve().parent.parent / "data" / "cota.duckdb"
+LOTE_CNPJ = 100
 
 
 def _pipeline(nome: str, dataset: str) -> dlt.Pipeline:
@@ -78,9 +79,17 @@ def main() -> None:
     if args.pular_cnpj:
         return
     anos = args.anos or dlt.config["sources.camara.anos"]
+    brasilapi = _pipeline("brasilapi", "raw_brasilapi")
+    print(brasilapi.run(brasilapi_source(cnpjs=[], anos=anos).with_resources("feriados")))
+
+    # O dlt só grava no banco ao fim de cada `run`. Em lotes, uma execução interrompida
+    # perde no máximo um lote, e a próxima continua de onde parou.
     pendentes = cnpjs_pendentes(args.limite_cnpj)
-    print(f"{len(pendentes)} CNPJs novos para consultar")
-    print(_pipeline("brasilapi", "raw_brasilapi").run(brasilapi_source(cnpjs=pendentes, anos=anos)))
+    print(f"{len(pendentes)} CNPJs novos para consultar, em lotes de {LOTE_CNPJ}")
+    for inicio in range(0, len(pendentes), LOTE_CNPJ):
+        lote = pendentes[inicio : inicio + LOTE_CNPJ]
+        brasilapi.run(brasilapi_source(cnpjs=lote, anos=anos).with_resources("cnpj"))
+        print(f"CNPJs: {inicio + len(lote)}/{len(pendentes)}")
 
 
 if __name__ == "__main__":

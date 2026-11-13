@@ -1,0 +1,94 @@
+version: 2
+
+models:
+  - name: stg_camara__despesas
+    description: >
+      Notas da cota parlamentar (CEAP), uma linha por nota ou parcela, do arquivo anual oficial.
+      Inclui as lideranças partidárias (`eh_lideranca`). Não inclui passagens aéreas emitidas
+      pelo sistema da Câmara (SIGEPA), que não estão no arquivo — ver decisão 002.
+    data_tests:
+      - dbt_utils.expression_is_true:
+          # Nota emitida muito antes do ano em que foi paga é erro de digitação (uma de 2002 em 2024).
+          arguments:
+            expression: "year(data_emissao) >= ano - 1"
+          config:
+            where: "data_emissao is not null"
+    columns:
+      - name: despesa_id
+        description: Hash das colunas que identificam a nota; o arquivo não tem chave natural.
+        data_tests:
+          - not_null
+          - unique:
+              config:
+                severity: error   # duplicata infla o total sem ninguém notar
+      - name: deputado_id
+        description: Id do deputado na API (`ide_cadastro`). Vazio nas lideranças.
+        data_tests:
+          - not_null:
+              config:
+                where: "not eh_lideranca"
+      - name: cota_id
+        description: Id de quem usa a cota (`nu_deputado_id`); existe para deputados e lideranças.
+        data_tests: [not_null]
+      - name: uf
+        description: UF do deputado. Vazia nas lideranças (que vêm com 'NA').
+        data_tests:
+          - not_null:
+              config:
+                where: "not eh_lideranca"
+      - name: documento_fornecedor
+        description: CNPJ ou CPF do fornecedor, só dígitos.
+        data_tests: [not_null]
+      - name: tipo_fornecedor
+        description: "'PJ' (CNPJ, 14 dígitos) ou 'PF' (CPF, 11)."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["PJ", "PF"]
+      - name: tipo_documento
+        description: Tipo da nota. Os códigos 3 e 4 não estão no dicionário da Câmara.
+      - name: emitida_em
+        description: Data e hora de emissão, horário de Brasília sem fuso. Só combustível traz hora.
+      - name: data_emissao
+        description: Data de emissão. Vazia em telefonia, que só tem competência.
+        data_tests:
+          - not_null:
+              config:
+                where: "subcota <> 'TELEFONIA'"
+      - name: competencia
+        description: Primeiro dia do mês a que a nota se refere (`num_ano` e `num_mes` do arquivo).
+        data_tests: [not_null]
+      - name: valor_documento
+        description: >
+          Valor da nota. Não somar: nota paga em partes repete o valor inteiro em cada linha.
+      - name: valor_liquido
+        description: Valor pago pela Câmara, em reais. É a métrica de gasto.
+        data_tests: [not_null]
+
+  - name: stg_camara__deputados
+    description: Deputados que exerceram mandato na legislatura configurada; uma linha por deputado.
+    columns:
+      - name: deputado_id
+        data_tests:
+          - not_null
+          - unique:
+              config:
+                severity: error   # deputado repetido multiplica as despesas no join
+      - name: partido_atual
+        description: Partido no momento da carga. Para o partido na data da nota, usar o histórico.
+
+  - name: stg_camara__deputados_historico
+    description: >
+      Eventos do mandato de cada deputado, em todas as legislaturas dele. Base do SCD2 de partido.
+    columns:
+      - name: evento_id
+        data_tests:
+          - not_null
+          - unique:
+              config:
+                severity: error   # evento repetido quebra o SCD2 de partido
+      - name: ocorrido_em
+        description: Data e hora do evento, horário de Brasília sem fuso.
+        data_tests: [not_null]
+      - name: partido
+        data_tests: [not_null]
