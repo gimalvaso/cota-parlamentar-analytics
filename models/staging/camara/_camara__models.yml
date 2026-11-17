@@ -74,8 +74,6 @@ models:
           - unique:
               config:
                 severity: error   # deputado repetido multiplica as despesas no join
-      - name: partido_atual
-        description: Partido no momento da carga. Para o partido na data da nota, usar o histórico.
 
   - name: stg_camara__deputados_historico
     description: >
