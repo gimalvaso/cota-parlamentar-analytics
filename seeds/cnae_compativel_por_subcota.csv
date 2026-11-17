@@ -1,0 +1,91 @@
+subcota_id,cnae_prefixo,atividade
+1,68,Atividades imobiliárias (aluguel do escritório)
+1,35,Energia elétrica e gás
+1,36,Captação e distribuição de água
+1,37,Esgoto
+1,46,Comércio atacadista
+1,47,Comércio varejista
+1,61,Telecomunicações
+1,62,Tecnologia da informação
+1,63,Serviços de informação
+1,77,Aluguel de máquinas e equipamentos
+1,80,Vigilância e segurança
+1,81,Limpeza e conservação de edifícios
+1,82,Serviços de escritório e apoio administrativo
+1,33,Manutenção de máquinas e equipamentos
+1,43,Serviços especializados para construção (manutenção predial)
+1,95,Reparação de equipamentos de informática e comunicação
+1,18,Impressão
+1,41,Construção de edifícios (proprietário do imóvel)
+1,64,Holdings e gestão de participações (proprietário do imóvel)
+1,84,"Administração pública (água, esgoto e taxas municipais)"
+1,94,Associações e sindicatos (proprietário do imóvel)
+3,4731,Comércio varejista de combustíveis
+3,4732,Comércio varejista de lubrificantes
+3,4681,Comércio atacadista de combustíveis
+4,62,Tecnologia da informação
+4,63,Serviços de informação
+4,69,Atividades jurídicas e de contabilidade
+4,70,Consultoria em gestão
+4,71,Serviços de arquitetura e engenharia
+4,72,Pesquisa e desenvolvimento
+4,73,Publicidade e pesquisa de mercado
+4,74,Outras atividades profissionais e técnicas
+5,18,Impressão
+5,58,"Edição (jornais, revistas, livros)"
+5,59,"Produção de vídeo, cinema e som"
+5,60,Rádio e televisão
+5,62,Tecnologia da informação (sites e aplicativos)
+5,63,Serviços de informação e portais
+5,73,Publicidade e pesquisa de mercado
+5,74,Design e fotografia
+5,8230,Organização de eventos
+5,90,Atividades artísticas e de espetáculos
+5,53,Correio e entregas (mala direta)
+8,80,Vigilância e segurança
+9,51,Transporte aéreo
+9,52,Atividades auxiliares do transporte aéreo
+9,7911,Agências de viagem
+999,51,Transporte aéreo
+999,52,Atividades auxiliares do transporte aéreo
+999,7911,Agências de viagem
+10,61,Telecomunicações
+11,53,Correio e entregas
+12,58,"Edição (jornais, revistas, livros)"
+12,4761,Comércio varejista de livros e jornais
+12,63,Serviços de informação e portais
+13,56,Alimentação (restaurantes e similares)
+13,55,Alojamento (restaurante de hotel)
+13,4711,Supermercados
+13,4712,Minimercados e mercearias
+13,4721,Padarias e laticínios
+13,4729,Comércio varejista de alimentos
+14,55,Alojamento
+14,7911,Agências de viagem
+119,51,Transporte aéreo
+119,52,Atividades auxiliares do transporte aéreo
+119,7719,Locação de outros meios de transporte (aeronaves)
+120,7711,Locação de automóveis sem condutor
+120,4923,Transporte por táxi e locação com motorista
+120,4929,Transporte rodoviário de passageiros sob regime de fretamento
+120,7719,Locação de outros meios de transporte
+121,50,Transporte aquaviário
+121,52,Atividades auxiliares do transporte aquaviário
+121,7719,Locação de outros meios de transporte (embarcações)
+122,49,Transporte terrestre (táxi)
+122,52,"Pedágio, estacionamento e terminais"
+122,74,Intermediação de serviços (aplicativos e tags de pedágio)
+122,82,Serviços de apoio (operadoras de tag de pedágio)
+122,77,Locação de veículos
+123,49,Transporte terrestre
+123,50,Transporte aquaviário
+123,52,Terminais rodoviários e aquaviários
+123,7911,Agências de viagem
+137,85,Educação
+137,8230,Organização de eventos
+137,94,Associações e entidades
+137,70,Consultoria em gestão
+137,72,Pesquisa e desenvolvimento
+145,62,Tecnologia da informação
+145,63,Serviços de informação
+145,82,Serviços de apoio administrativo

@@ -25,6 +25,18 @@ models:
 seeds:
   cota_parlamentar:
     +schema: seeds
+    cnae_compativel_por_subcota:
+      +column_types:
+        subcota_id: integer
+        cnae_prefixo: varchar   # prefixo de 2 (divisão) ou 4 (classe) dígitos
+
+# Limites dos sinais de anomalia. Justificativa e distribuição em docs/decisoes/003-sinais-de-anomalia.md.
+vars:
+  sinal_empresa_recente_dias: 90         # abertura do CNPJ até a primeira nota
+  sinal_exclusivo_parte_minima: 0.9      # parte do faturamento vinda de uma só cota
+  sinal_exclusivo_valor_minimo: 100000   # faturamento mínimo do fornecedor para o sinal valer
+  sinal_pares_uf_percentil: 0.9          # acima deste percentil dos deputados da mesma UF
+  sinal_pares_uf_meses_minimos: 6        # meses com despesa para entrar na comparação
 
 tests:
   +severity: warn   # só bloqueia o que a política de qualidade promove a error
