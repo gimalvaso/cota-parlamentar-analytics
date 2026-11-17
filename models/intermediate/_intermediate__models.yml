@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: int_deputados_partido_periodos
+    description: >
+      SCD2 de partido: um período por deputado e partido, a partir do histórico da API.
+      `valido_ate` é exclusivo e nulo no período atual.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [deputado_id, valido_de]
+          config:
+            severity: error   # período sobreposto duplica a nota no join de partido
+    columns:
+      - name: periodo_id
+        data_tests: [not_null, unique]
+      - name: partido
+        data_tests: [not_null]
+
