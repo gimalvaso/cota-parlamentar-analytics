@@ -1,0 +1,97 @@
+version: 2
+
+models:
+  - name: int_deputados_partido_periodos
+    description: >
+      SCD2 de partido: um período por deputado e partido, a partir do histórico da API.
+      `valido_ate` é exclusivo e nulo no período atual.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [deputado_id, valido_de]
+          config:
+            severity: error   # período sobreposto duplica a nota no join de partido
+    columns:
+      - name: periodo_id
+        data_tests: [not_null, unique]
+      - name: partido
+        data_tests: [not_null]
+
+  - name: int_fornecedores_perfil
+    description: >
+      Um fornecedor por linha (CNPJ ou CPF), com cadastro da Receita e os sinais 1 (empresa
+      recente) e 3 (fornecedor exclusivo). Sinal nulo = não avaliável, diferente de falso.
+    columns:
+      - name: documento_fornecedor
+        data_tests:
+          - not_null
+          - unique:
+              config:
+                severity: error   # fornecedor repetido duplica as notas no mart
+      - name: parte_cota_principal
+        description: Parte do faturamento do fornecedor que veio da cota que mais pagou a ele.
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1.0001
+      - name: dias_abertura_ate_primeira_nota
+        description: Dias entre a abertura do CNPJ e a primeira nota carregada. Negativo = nota antes da abertura.
+      - name: sinal_empresa_recente
+        description: "Sinal 1: CNPJ aberto até `sinal_empresa_recente_dias` dias antes da primeira nota."
+      - name: sinal_fornecedor_exclusivo
+        description: >
+          Sinal 3: ao menos `sinal_exclusivo_parte_minima` do faturamento vem de uma só cota, com
+          faturamento de `sinal_exclusivo_valor_minimo` ou mais. Nulo para fornecedor de escritório.
+
+  - name: int_despesas_sinais
+    description: >
+      Uma nota por linha, com o partido na data da nota (SCD2) e os sinais 2 (CNAE
+      incompatível), 4a (fim de semana ou feriado) e 4b (nota repetida).
+    data_tests:
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: ref('stg_camara__despesas')
+          config:
+            severity: error   # nota perdida ou duplicada muda o total sem aviso
+    columns:
+      - name: despesa_id
+        data_tests:
+          - not_null
+          - unique:
+              config:
+                severity: error   # dois períodos de partido para a mesma data
+      - name: partido
+        description: Partido na data da nota. Ver `origem_partido`.
+        data_tests:
+          - not_null:
+              config:
+                where: "not eh_lideranca"
+      - name: origem_partido
+        description: "'historico' (SCD2) ou 'arquivo' (sem período no histórico: lideranças e deputados só da legislatura anterior)."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["historico", "arquivo"]
+      - name: sinal_cnae_incompativel
+        description: "Sinal 2: nenhum CNAE do fornecedor (principal ou secundário) está na seed para a subcota. Nulo: CPF, CNPJ não consultado ou subcota sem mapa."
+      - name: sinal_fim_de_semana_ou_feriado
+        description: "Sinal 4a: emitida em sábado, domingo ou feriado nacional. Só avaliado em serviços contratados (escritório, consultoria, divulgação, segurança, publicações, cursos)."
+      - name: sinal_nota_repetida
+        description: "Sinal 4b: o mesmo número de nota do mesmo fornecedor foi reembolsado acima do valor da nota. Nulo sem número ou em telefonia e táxi/pedágio."
+
+  - name: int_deputados_comparados_uf
+    description: >
+      Um deputado da legislatura 57 por linha, com gasto médio por mês com despesa e a
+      posição entre os deputados da mesma UF. Sinal 5 (acima dos pares).
+    columns:
+      - name: deputado_id
+        data_tests:
+          - not_null
+          - unique:
+              config:
+                severity: error   # deputado repetido duplica no mart
+      - name: sinal_acima_pares_uf
+        description: >
+          Sinal 5: percentil na UF de `sinal_pares_uf_percentil` ou mais. Nulo para quem teve
+          menos de `sinal_pares_uf_meses_minimos` meses com despesa.

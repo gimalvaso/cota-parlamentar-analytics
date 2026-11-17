@@ -1,5 +1,6 @@
 -- Um deputado por linha: quem exerceu mandato na legislatura configurada na ingestão.
--- O partido daqui é o atual; o histórico de partido vem de stg_camara__deputados_historico.
+-- Sem partido: a listagem traz uma linha por partido de quem trocou, e a ingestão fica com
+-- a primeira, que nem sempre é a atual. Partido vem do histórico (int_deputados_partido_periodos).
 
 with origem as (
     select * from {{ source('camara', 'deputados') }}
@@ -8,7 +9,6 @@ with origem as (
 select
     id::integer as deputado_id,
     trim(nome) as nome,
-    sigla_partido as partido_atual,
     sigla_uf as uf,
     id_legislatura::integer as legislatura,
     url_foto,

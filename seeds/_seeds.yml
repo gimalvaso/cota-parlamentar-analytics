@@ -1,0 +1,12 @@
+version: 2
+
+seeds:
+  - name: cnae_compativel_por_subcota
+    description: >
+      Prefixos de CNAE (divisão de 2 dígitos ou classe de 4) aceitos para cada subcota da cota
+      parlamentar. Base do sinal 2. Montado a partir das atividades que mais recebem em cada
+      subcota; ver docs/decisoes/003-sinais-de-anomalia.md.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [subcota_id, cnae_prefixo]
