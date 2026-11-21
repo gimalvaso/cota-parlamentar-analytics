@@ -21,14 +21,16 @@ feriados as (
     select data from {{ ref('stg_brasilapi__feriados') }}
 ),
 
--- Sinal 2: compatível quando o CNAE principal ou algum secundário começa com um prefixo
--- aceito para a subcota (seeds/cnae_compativel_por_subcota.csv).
+-- Sinal 2: o CNAE do fornecedor bate com algum prefixo aceito para a subcota
+-- (seeds/cnae_compativel_por_subcota.csv)? Em três níveis, porque bater só pelo secundário é
+-- mais fraco: quem passa só assim tem em média 11 atividades secundárias, contra 5 de quem
+-- bate pelo principal (empresa que registra de tudo para poder faturar de tudo).
 cnaes_do_cnpj as (
-    select cnpj, lpad(cnae_principal_id::varchar, 7, '0') as cnae
+    select cnpj, lpad(cnae_principal_id::varchar, 7, '0') as cnae, true as eh_principal
     from {{ ref('stg_brasilapi__cnpj') }}
     where cnae_principal_id is not null
     union all
-    select cnpj, lpad(cnae_id::varchar, 7, '0')
+    select cnpj, lpad(cnae_id::varchar, 7, '0'), false
     from {{ ref('stg_brasilapi__cnaes_secundarios') }}
 ),
 
@@ -36,7 +38,11 @@ compatibilidade as (
     select
         d.documento_fornecedor,
         d.subcota_id,
-        bool_or(starts_with(c.cnae, m.cnae_prefixo)) as compativel
+        case
+            when bool_or(c.eh_principal and starts_with(c.cnae, m.cnae_prefixo)) then 'principal'
+            when bool_or(starts_with(c.cnae, m.cnae_prefixo)) then 'secundario'
+            else 'nenhuma'
+        end as compatibilidade_cnae
     from (select distinct documento_fornecedor, subcota_id from despesas) as d
     inner join cnaes_do_cnpj as c on c.cnpj = d.documento_fornecedor
     inner join {{ ref('cnae_compativel_por_subcota') }} as m on m.subcota_id = d.subcota_id
@@ -72,10 +78,8 @@ select
     d.referencia_em,
     d.valor_liquido,
 
-    case
-        when c.compativel is null then null
-        else not c.compativel
-    end as sinal_cnae_incompativel,
+    c.compatibilidade_cnae,
+    c.compatibilidade_cnae = 'nenhuma' as sinal_cnae_incompativel,
 
     -- Só nos serviços contratados: em combustível, hospedagem, alimentação e transporte o
     -- fim de semana é rotina de viagem.
