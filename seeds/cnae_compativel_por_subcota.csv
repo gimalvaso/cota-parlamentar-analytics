@@ -20,6 +20,7 @@ subcota_id,cnae_prefixo,atividade
 1,64,Holdings e gestão de participações (proprietário do imóvel)
 1,84,"Administração pública (água, esgoto e taxas municipais)"
 1,94,Associações e sindicatos (proprietário do imóvel)
+1,65,Seguradoras e fundos de pensão (proprietário do imóvel)
 3,4731,Comércio varejista de combustíveis
 3,4732,Comércio varejista de lubrificantes
 3,4681,Comércio atacadista de combustíveis
@@ -42,7 +43,9 @@ subcota_id,cnae_prefixo,atividade
 5,8230,Organização de eventos
 5,90,Atividades artísticas e de espetáculos
 5,53,Correio e entregas (mala direta)
+5,8219,Fotocópias e preparação de documentos (impressos)
 8,80,Vigilância e segurança
+8,8111,Serviços combinados para apoio a edifícios (portaria)
 9,51,Transporte aéreo
 9,52,Atividades auxiliares do transporte aéreo
 9,7911,Agências de viagem
@@ -60,6 +63,7 @@ subcota_id,cnae_prefixo,atividade
 13,4712,Minimercados e mercearias
 13,4721,Padarias e laticínios
 13,4729,Comércio varejista de alimentos
+13,4731,Loja de conveniência de posto
 14,55,Alojamento
 14,7911,Agências de viagem
 119,51,Transporte aéreo
@@ -77,6 +81,8 @@ subcota_id,cnae_prefixo,atividade
 122,74,Intermediação de serviços (aplicativos e tags de pedágio)
 122,82,Serviços de apoio (operadoras de tag de pedágio)
 122,77,Locação de veículos
+122,94,Associações e sindicatos de taxistas
+122,84,Administração pública (pedágio e estacionamento públicos)
 123,49,Transporte terrestre
 123,50,Transporte aquaviário
 123,52,Terminais rodoviários e aquaviários

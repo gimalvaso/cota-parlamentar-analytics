@@ -73,6 +73,14 @@ models:
           - accepted_values:
               arguments:
                 values: ["historico", "arquivo"]
+      - name: compatibilidade_cnae
+        description: >
+          'principal' (o CNAE principal bate com a subcota), 'secundario' (só algum secundário
+          bate: sinal fraco) ou 'nenhuma'. Nulo: CPF, CNPJ não consultado ou subcota sem mapa.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["principal", "secundario", "nenhuma"]
       - name: sinal_cnae_incompativel
         description: "Sinal 2: nenhum CNAE do fornecedor (principal ou secundário) está na seed para a subcota. Nulo: CPF, CNPJ não consultado ou subcota sem mapa."
       - name: sinal_fim_de_semana_ou_feriado
